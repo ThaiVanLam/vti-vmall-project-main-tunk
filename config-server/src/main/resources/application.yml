@@ -1,0 +1,10 @@
+server:
+  port: 6969
+spring:
+  profiles:
+    include: native
+  cloud:
+    config:
+      server:
+        native:
+          searchLocations: file:///E:/file_tai_lieu/Course/do_an_tot_nghiep/vti_academy/VTI_NOTE/Note_khoa_hoc_chinh/microservice/vti-vmall-project-2/config-server/configs
