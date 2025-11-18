@@ -11,16 +11,7 @@
         <module name="config-server" />
         <module name="discovery-service" />
       </profile>
-      <profile name="Annotation profile for common-lib" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
-        </processorPath>
-        <module name="common-api" />
-      </profile>
-      <profile name="Annotation profile for mall-service" enabled="true">
+      <profile name="Annotation profile for user-manager" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -31,6 +22,15 @@
         <module name="mall-service" />
         <module name="user-manager" />
         <module name="notification-service" />
+      </profile>
+      <profile name="Annotation profile for common-lib" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
+        </processorPath>
+        <module name="common-api" />
       </profile>
     </annotationProcessing>
   </component>

@@ -1075,25 +1075,25 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     <schema id="288" parent="1" name="information_schema">
       <CollationName>utf8mb3_general_ci</CollationName>
     </schema>
-    <schema id="289" parent="1" name="mysql">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="290" parent="1" name="performance_schema">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="291" parent="1" name="sys">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="292" parent="1" name="user-manager">
+    <schema id="289" parent="1" name="mall-manager">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-11-18.05:02:13</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-11-18.08:28:57</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
-    <schema id="293" parent="1" name="mall-manager">
+    <schema id="290" parent="1" name="mysql">
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </schema>
+    <schema id="291" parent="1" name="performance_schema">
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </schema>
+    <schema id="292" parent="1" name="sys">
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </schema>
+    <schema id="293" parent="1" name="user-manager">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-11-18.05:02:13</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-11-18.08:28:57</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <user id="294" parent="1" name="mysql.infoschema">
@@ -1112,35 +1112,87 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     <user id="298" parent="1" name="root">
       <Host>localhost</Host>
     </user>
-    <table id="299" parent="292" name="users">
+    <table id="299" parent="289" name="products">
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
-    <column id="300" parent="299" name="id">
+    <table id="300" parent="289" name="products_seq">
+      <DetailsLevel>3</DetailsLevel>
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="301" parent="293" name="users">
+      <DetailsLevel>3</DetailsLevel>
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <column id="302" parent="299" name="product_id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <column id="303" parent="299" name="description">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="304" parent="299" name="image">
+      <Position>3</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="305" parent="299" name="price">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StoredType>double|0s</StoredType>
+    </column>
+    <column id="306" parent="299" name="product_name">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="307" parent="299" name="quantity">
+      <Position>6</Position>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <index id="308" parent="299" name="PRIMARY">
+      <ColNames>product_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="309" parent="299" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="310" parent="300" name="next_val">
+      <Position>1</Position>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <column id="311" parent="301" name="id">
       <AutoIncrement>4</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="301" parent="299" name="username">
+    <column id="312" parent="301" name="username">
       <Position>2</Position>
       <StoredType>varchar(20)|0s</StoredType>
     </column>
-    <column id="302" parent="299" name="password">
+    <column id="313" parent="301" name="password">
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="303" parent="299" name="email">
+    <column id="314" parent="301" name="email">
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <index id="304" parent="299" name="PRIMARY">
+    <index id="315" parent="301" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="305" parent="299" name="PRIMARY">
+    <key id="316" parent="301" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
