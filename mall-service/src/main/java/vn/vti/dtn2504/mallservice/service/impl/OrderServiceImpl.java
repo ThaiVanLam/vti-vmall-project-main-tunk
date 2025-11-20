@@ -1,14 +1,19 @@
 package vn.vti.dtn2504.mallservice.service.impl;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import vn.vti.dtn2504.mallservice.dto.request.CreateOrderRequest;
+import vn.vti.dtn2504.mallservice.dto.request.SendNotificationRequest;
 import vn.vti.dtn2504.mallservice.dto.response.OrderResponse;
 import vn.vti.dtn2504.mallservice.model.Order;
 import vn.vti.dtn2504.mallservice.model.OrderStatus;
@@ -23,6 +28,16 @@ import vn.vti.dtn2504.mallservice.service.OrderService;
 public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
+    private final RabbitTemplate rabbitTemplate;
+
+    @Value("${queue.notification.routing-key}")
+    private String routingKey;
+
+    @Value("${queue.notification.queue}")
+    private String queueName;
+
+    @Value("${queue.notification.exchange}")
+    private String exchangeName;
 
     @Override
     @Transactional
@@ -42,6 +57,13 @@ public class OrderServiceImpl implements OrderService {
                 .userId(authenticatedUser.userId())
                 .username(authenticatedUser.username())
                 .build();
+
+        SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
+        sendNotificationRequest.getRecipient();
+        sendNotificationRequest.setSubject("Order notification");
+        sendNotificationRequest.setMsgBody("You have ordered product: " + product.getProductName() + " at date: " + order.getCreatedAt());
+
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, sendNotificationRequest);
 
         Order savedOrder = orderRepository.save(order);
         return toResponse(savedOrder);
