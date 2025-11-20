@@ -59,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
-        sendNotificationRequest.getRecipient();
+        sendNotificationRequest.setRecipient();
         sendNotificationRequest.setSubject("Order notification");
         sendNotificationRequest.setMsgBody("You have ordered product: " + product.getProductName() + " at date: " + order.getCreatedAt());
 
