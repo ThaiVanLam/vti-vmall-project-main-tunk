@@ -52,3 +52,4 @@ queue:
     queue: notification-queue
     exchange: notification-exchange
     routing-key: notification-routing-key
+

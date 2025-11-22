@@ -1,5 +1,5 @@
 api-docs:
-  server: http://localhost:8888/mall-service
+  server: http://localhost:8888/mall
   oauth2:
     authorization-url: http://localhost:8001/oauth2/authorize
     token-url: http://localhost:8001/oauth2/token
@@ -8,3 +8,4 @@ springdoc:
   swagger-ui:
     oauth:
       use-basic-authentication-with-access-code-grant: true
+  
