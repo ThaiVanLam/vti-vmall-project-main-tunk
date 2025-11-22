@@ -12,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import vn.vti.dtn2504.mallservice.client.ShipmentClient;
 import vn.vti.dtn2504.mallservice.dto.request.CreateOrderRequest;
+import vn.vti.dtn2504.mallservice.dto.request.CreateShipmentRequest;
 import vn.vti.dtn2504.mallservice.dto.request.SendNotificationRequest;
 import vn.vti.dtn2504.mallservice.dto.response.OrderResponse;
 import vn.vti.dtn2504.mallservice.model.Order;
@@ -29,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final RabbitTemplate rabbitTemplate;
+    private final ShipmentClient shipmentClient;
 
     @Value("${queue.notification.routing-key}")
     private String routingKey;
@@ -59,13 +62,21 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
-        sendNotificationRequest.setRecipient();
+        sendNotificationRequest.setRecipient(authenticatedUser.email());
         sendNotificationRequest.setSubject("Order notification");
-        sendNotificationRequest.setMsgBody("You have ordered product: " + product.getProductName() + " at date: " + order.getCreatedAt());
+
+        Order savedOrder = orderRepository.save(order);
+
+        sendNotificationRequest.setMsgBody("You have ordered product: " + product.getProductName() + " at date: " + savedOrder.getCreatedAt());
 
         rabbitTemplate.convertAndSend(exchangeName, routingKey, sendNotificationRequest);
 
-        Order savedOrder = orderRepository.save(order);
+        //gọi shipment
+        CreateShipmentRequest createShipmentRequest = new CreateShipmentRequest();
+        createShipmentRequest.setShipmentId("1");
+        createShipmentRequest.setShipmentName("shipmentName1");
+        shipmentClient.createShipment(createShipmentRequest);
+
         return toResponse(savedOrder);
     }
 

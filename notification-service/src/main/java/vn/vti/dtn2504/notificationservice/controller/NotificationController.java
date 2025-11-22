@@ -23,11 +23,8 @@ public class NotificationController {
             queues = "${queue.notification.queue}"
     )
     @PostMapping("/sendMail")
-    public String
+    public void
     sendMail(@RequestBody EmailDetails details) {
-        String status
-                = emailService.sendSimpleMail(details);
-
-        return status;
+        emailService.sendSimpleMail(details);
     }
 }

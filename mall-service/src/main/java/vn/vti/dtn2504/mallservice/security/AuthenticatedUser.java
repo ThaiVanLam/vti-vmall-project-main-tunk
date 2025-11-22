@@ -3,13 +3,14 @@ package vn.vti.dtn2504.mallservice.security;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-public record AuthenticatedUser(Long userId, String username) {
+public record AuthenticatedUser(Long userId, String username, String email) {
 
     public static AuthenticatedUser from(JwtAuthenticationToken authentication) {
         Jwt jwt = authentication.getToken();
         Long userId = extractUserId(jwt);
         String username = extractUsername(jwt, authentication);
-        return new AuthenticatedUser(userId, username);
+        String email = extractEmail(jwt, authentication);
+        return new AuthenticatedUser(userId, username, email);
     }
 
     private static Long extractUserId(Jwt jwt) {
@@ -33,5 +34,13 @@ public record AuthenticatedUser(Long userId, String username) {
             username = authentication.getName();
         }
         return username;
+    }
+
+    private static String extractEmail(Jwt jwt, JwtAuthenticationToken authentication) {
+        String email = jwt.getClaimAsString("email");
+        if (email == null) {
+            email = authentication.getTokenAttributes().getOrDefault("email", "").toString();
+        }
+        return email;
     }
 }
