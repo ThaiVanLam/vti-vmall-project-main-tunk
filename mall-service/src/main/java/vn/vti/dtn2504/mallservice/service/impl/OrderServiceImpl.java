@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import vn.vti.dtn2504.mallservice.client.ShipmentClient;
 import vn.vti.dtn2504.mallservice.dto.request.CreateOrderRequest;
 import vn.vti.dtn2504.mallservice.dto.request.CreateShipmentRequest;
+import vn.vti.dtn2504.mallservice.dto.request.DeliveryStatus;
 import vn.vti.dtn2504.mallservice.dto.request.SendNotificationRequest;
 import vn.vti.dtn2504.mallservice.dto.response.OrderResponse;
 import vn.vti.dtn2504.mallservice.model.Order;
@@ -73,8 +74,17 @@ public class OrderServiceImpl implements OrderService {
 
         //gọi shipment
         CreateShipmentRequest createShipmentRequest = new CreateShipmentRequest();
-        createShipmentRequest.setShipmentId("1");
-        createShipmentRequest.setShipmentName("shipmentName1");
+        createShipmentRequest.setOrderId(savedOrder.getId());
+        createShipmentRequest.setReceiverName("Nguyen Van A");
+        createShipmentRequest.setReceiverPhone("0912345678");
+        createShipmentRequest.setShippingAddress("123 Duong Pho Hue, Quan Hoan Kiem, Ha Noi");
+        createShipmentRequest.setCarrier("GiaoHangNhanh");
+        createShipmentRequest.setTrackingCode("GHN-2025-000123");
+        createShipmentRequest.setShippingFee(BigDecimal.valueOf(35000));
+        createShipmentRequest.setStatus(DeliveryStatus.PENDING);
+
+        LocalDateTime estimatedDeliveryDate = LocalDateTime.parse("2025-12-25T10:00:00");
+        createShipmentRequest.setEstimatedDeliveryDate(estimatedDeliveryDate);
         shipmentClient.createShipment(createShipmentRequest);
 
         return toResponse(savedOrder);
