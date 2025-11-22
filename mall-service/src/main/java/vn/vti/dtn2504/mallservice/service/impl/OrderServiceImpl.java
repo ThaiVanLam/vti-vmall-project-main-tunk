@@ -19,8 +19,10 @@ import vn.vti.dtn2504.mallservice.dto.request.DeliveryStatus;
 import vn.vti.dtn2504.mallservice.dto.request.SendNotificationRequest;
 import vn.vti.dtn2504.mallservice.dto.response.OrderResponse;
 import vn.vti.dtn2504.mallservice.model.Order;
+import vn.vti.dtn2504.mallservice.model.OrderItem;
 import vn.vti.dtn2504.mallservice.model.OrderStatus;
 import vn.vti.dtn2504.mallservice.model.Product;
+import vn.vti.dtn2504.mallservice.repository.OrderItemRepository;
 import vn.vti.dtn2504.mallservice.repository.OrderRepository;
 import vn.vti.dtn2504.mallservice.repository.ProductRepository;
 import vn.vti.dtn2504.mallservice.security.AuthenticatedUser;
@@ -33,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final RabbitTemplate rabbitTemplate;
     private final ShipmentClient shipmentClient;
+    private final OrderItemRepository orderItemRepository;
 
     @Value("${queue.notification.routing-key}")
     private String routingKey;
@@ -67,6 +70,16 @@ public class OrderServiceImpl implements OrderService {
         sendNotificationRequest.setSubject("Order notification");
 
         Order savedOrder = orderRepository.save(order);
+
+        OrderItem orderItem = OrderItem.builder()
+                .order(savedOrder)
+                .productId(product.getProductId())
+                .productName(product.getProductName())
+                .quantity(request.getQuantity())
+                .unitPrice(BigDecimal.valueOf(product.getPrice()))
+                .build();
+        savedOrder.getOrderItems().add(orderItem);
+        orderItemRepository.save(orderItem);
 
         sendNotificationRequest.setMsgBody("You have ordered product: " + product.getProductName() + " at date: " + savedOrder.getCreatedAt());
 
