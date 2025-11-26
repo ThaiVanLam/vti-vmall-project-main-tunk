@@ -15,7 +15,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateProductRequest {
-    private Long productId;
     private String productName;
     private String description;
 //    private String image;

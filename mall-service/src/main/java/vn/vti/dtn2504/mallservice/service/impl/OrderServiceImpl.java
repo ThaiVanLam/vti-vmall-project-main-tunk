@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,10 +15,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import vn.vti.dtn2504.mallservice.client.ShipmentClient;
-import vn.vti.dtn2504.mallservice.dto.request.CreateOrderRequest;
-import vn.vti.dtn2504.mallservice.dto.request.CreateShipmentRequest;
-import vn.vti.dtn2504.mallservice.dto.request.DeliveryStatus;
-import vn.vti.dtn2504.mallservice.dto.request.SendNotificationRequest;
+import vn.vti.dtn2504.mallservice.dto.request.*;
+import vn.vti.dtn2504.mallservice.dto.response.OrderItemResponse;
 import vn.vti.dtn2504.mallservice.dto.response.OrderResponse;
 import vn.vti.dtn2504.mallservice.model.Order;
 import vn.vti.dtn2504.mallservice.model.OrderItem;
@@ -49,17 +49,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponse placeOrder(CreateOrderRequest request, JwtAuthenticationToken authentication) {
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order must contain at least one item");
+        }
 
         AuthenticatedUser authenticatedUser = AuthenticatedUser.from(authentication);
-        BigDecimal totalAmount = BigDecimal.valueOf(product.getPrice()).multiply(BigDecimal.valueOf(request.getQuantity()));
 
         Order order = Order.builder()
-                .productId(product.getProductId())
-                .productName(product.getProductName())
-                .quantity(request.getQuantity())
-                .totalAmount(totalAmount)
+                .totalAmount(BigDecimal.ZERO)
                 .status(OrderStatus.PENDING)
                 .userId(authenticatedUser.userId())
                 .username(authenticatedUser.username())
@@ -71,17 +68,36 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        OrderItem orderItem = OrderItem.builder()
-                .order(savedOrder)
-                .productId(product.getProductId())
-                .productName(product.getProductName())
-                .quantity(request.getQuantity())
-                .unitPrice(BigDecimal.valueOf(product.getPrice()))
-                .build();
-        savedOrder.getOrderItems().add(orderItem);
-        orderItemRepository.save(orderItem);
+        List<OrderItem> orderItems = new ArrayList<>();
+        BigDecimal totalAmount = BigDecimal.ZERO;
 
-        sendNotificationRequest.setMsgBody("You have ordered product: " + product.getProductName() + " at date: " + savedOrder.getCreatedAt());
+        for (OrderItemRequest itemRequest : request.getItems()) {
+            Product product = productRepository.findById(itemRequest.getProductId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+            BigDecimal itemTotal = BigDecimal.valueOf(product.getPrice())
+                    .multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
+            totalAmount = totalAmount.add(itemTotal);
+
+            OrderItem orderItem = OrderItem.builder()
+                    .order(savedOrder)
+                    .productId(product.getProductId())
+                    .productName(product.getProductName())
+                    .quantity(itemRequest.getQuantity())
+                    .unitPrice(BigDecimal.valueOf(product.getPrice()))
+                    .build();
+
+            orderItems.add(orderItem);
+        }
+
+        savedOrder.getOrderItems().addAll(orderItems);
+        orderItemRepository.saveAll(orderItems);
+
+        savedOrder.setTotalAmount(totalAmount);
+        savedOrder = orderRepository.save(savedOrder);
+
+        sendNotificationRequest.setMsgBody(
+                "You have placed an order with " + orderItems.size() + " item(s) at date: " + savedOrder.getCreatedAt());
 
         rabbitTemplate.convertAndSend(exchangeName, routingKey, sendNotificationRequest);
 
@@ -108,13 +124,22 @@ public class OrderServiceImpl implements OrderService {
                 .orderId(order.getId())
                 .userId(order.getUserId())
                 .username(order.getUsername())
-                .productId(order.getProductId())
-                .productName(order.getProductName())
-                .quantity(order.getQuantity())
+                .items(order.getOrderItems().stream()
+                        .map(this::toItemResponse)
+                        .toList())
                 .totalAmount(order.getTotalAmount())
                 .status(order.getStatus())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
+                .build();
+    }
+
+    private OrderItemResponse toItemResponse(OrderItem orderItem) {
+        return OrderItemResponse.builder()
+                .productId(orderItem.getProductId())
+                .productName(orderItem.getProductName())
+                .quantity(orderItem.getQuantity())
+                .unitPrice(orderItem.getUnitPrice())
                 .build();
     }
 }

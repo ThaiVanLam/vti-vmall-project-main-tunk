@@ -2,6 +2,8 @@ package vn.vti.dtn2504.mallservice.dto.response;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,9 +20,7 @@ public class OrderResponse {
     private Long orderId;
     private Long userId;
     private String username;
-    private Long productId;
-    private String productName;
-    private int quantity;
+    private List<OrderItemResponse> items;
     private BigDecimal totalAmount;
     private OrderStatus status;
     private Instant createdAt;

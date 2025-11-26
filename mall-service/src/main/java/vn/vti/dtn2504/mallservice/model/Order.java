@@ -1,6 +1,7 @@
 package vn.vti.dtn2504.mallservice.model;
 
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,14 +29,6 @@ public class Order {
     private Long userId;
 
     private String username;
-
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
-
-    @Column(name = "product_name", nullable = false)
-    private String productName;
-
-    private int quantity;
 
     @Column(name = "total_amount", precision = 15, scale = 2)
     private BigDecimal totalAmount;
