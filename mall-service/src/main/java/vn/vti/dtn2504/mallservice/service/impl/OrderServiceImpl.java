@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import vn.vti.dtn2504.mallservice.client.ShipmentClient;
+import vn.vti.dtn2504.mallservice.service.ShipmentCircuitBreakerService;
 import vn.vti.dtn2504.mallservice.dto.request.*;
 import vn.vti.dtn2504.mallservice.dto.response.OrderItemResponse;
 import vn.vti.dtn2504.mallservice.dto.response.OrderResponse;
@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final RabbitTemplate rabbitTemplate;
-    private final ShipmentClient shipmentClient;
+    private final ShipmentCircuitBreakerService shipmentCircuitBreakerService;
     private final OrderItemRepository orderItemRepository;
 
     @Value("${queue.notification.routing-key}")
@@ -114,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
 
         LocalDateTime estimatedDeliveryDate = LocalDateTime.parse("2025-12-25T10:00:00");
         createShipmentRequest.setEstimatedDeliveryDate(estimatedDeliveryDate);
-        shipmentClient.createShipment(createShipmentRequest);
+        shipmentCircuitBreakerService.createShipment(createShipmentRequest);
 
         return toResponse(savedOrder);
     }
