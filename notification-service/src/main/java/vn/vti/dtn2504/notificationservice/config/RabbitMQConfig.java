@@ -6,9 +6,22 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class RabbitMQConfig {
+    @Value("${queue.notification.queue}")
+    private String notificationQueue;
+
+    @Value("${queue.notification.exchange}")
+    private String notificationExchange;
+
+    @Value("${queue.notification.routing-key}")
+    private String notificationRoutingKey;
+
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
             ConnectionFactory connectionFactory) {
@@ -21,7 +34,19 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue notificationQueue() {
-        return new Queue("notification-queue", true);
+    public Queue notificationQueueBean() {
+        return new Queue(notificationQueue, true);
+    }
+
+    @Bean
+    public DirectExchange notificationExchange() {
+        return new DirectExchange(notificationExchange, true, false);
+    }
+
+    @Bean
+    public Binding notificationBinding() {
+        return BindingBuilder.bind(notificationQueueBean())
+                .to(notificationExchange())
+                .with(notificationRoutingKey);
     }
 }
