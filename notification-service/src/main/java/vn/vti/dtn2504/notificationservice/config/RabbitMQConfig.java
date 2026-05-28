@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.amqp.core.Queue;
 
 @Configuration
 public class RabbitMQConfig {
@@ -19,4 +20,8 @@ public class RabbitMQConfig {
         return factory;
     }
 
+    @Bean
+    public Queue notificationQueue() {
+        return new Queue("notification-queue", true);
+    }
 }

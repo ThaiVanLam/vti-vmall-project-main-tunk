@@ -7,4 +7,4 @@ spring:
     config:
       server:
         native:
-          searchLocations: file:///G:/My%20Drive/drive_D_on_laptop/file_tai_lieu/Course/waiting_for_job_tasks/software%20engineer_backend/vti_academy/VTI_NOTE/Note_khoa_hoc_chinh/microservice/vti-vmall-project-3/config-server/configs
+          searchLocations: file:///G:/My%20Drive/drive_D_on_laptop/file_with_code/vti-vmall-project-3/config-server/configs
