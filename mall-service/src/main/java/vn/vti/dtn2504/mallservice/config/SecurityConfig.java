@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -26,15 +25,13 @@ public class SecurityConfig {
     http.authorizeHttpRequests(
         authorizeRequests -> authorizeRequests
             .requestMatchers("/swagger-ui/**",
-                "/v3/api-docs/**").permitAll()
-            .anyRequest().authenticated()
-    );
+                "/v3/api-docs/**")
+            .permitAll()
+            .anyRequest().authenticated());
 
     http.oauth2ResourceServer(
         configurer -> configurer.jwt(
-            Customizer.withDefaults()
-        )
-    );
+            Customizer.withDefaults()));
     return http.build();
   }
 }

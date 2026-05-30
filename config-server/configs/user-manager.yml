@@ -1,5 +1,11 @@
 spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
   datasource:
     url: jdbc:mysql://localhost:3307/user-manager
     username: root
     password: root
+  sql:
+    init:
+      mode: never

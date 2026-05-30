@@ -23,7 +23,7 @@ import vn.vti.dtn2504.mallservice.model.OrderItem;
 import vn.vti.dtn2504.mallservice.model.OrderStatus;
 import vn.vti.dtn2504.mallservice.model.Product;
 import vn.vti.dtn2504.mallservice.repository.OrderItemRepository;
-import vn.vti.dtn2504.mallservice.repository.OrderRepository;
+import vn.vti.dtn2504.mallservice.repository.OrderWriteRepository;
 import vn.vti.dtn2504.mallservice.repository.ProductRepository;
 import vn.vti.dtn2504.mallservice.security.AuthenticatedUser;
 import vn.vti.dtn2504.mallservice.service.OrderService;
@@ -32,7 +32,7 @@ import vn.vti.dtn2504.mallservice.service.OrderService;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
-    private final OrderRepository orderRepository;
+    private final OrderWriteRepository orderWriteRepository;
     private final RabbitTemplate rabbitTemplate;
     private final ShipmentCircuitBreakerService shipmentCircuitBreakerService;
     private final OrderItemRepository orderItemRepository;
@@ -66,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
         sendNotificationRequest.setRecipient(authenticatedUser.email());
         sendNotificationRequest.setSubject("Order notification");
 
-        Order savedOrder = orderRepository.save(order);
+        Order savedOrder = orderWriteRepository.save(order);
 
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
@@ -94,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
         orderItemRepository.saveAll(orderItems);
 
         savedOrder.setTotalAmount(totalAmount);
-        savedOrder = orderRepository.save(savedOrder);
+        savedOrder = orderWriteRepository.save(savedOrder);
 
         sendNotificationRequest.setMsgBody(
                 "You have placed an order with " + orderItems.size() + " item(s) at date: " + savedOrder.getCreatedAt());
